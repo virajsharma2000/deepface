@@ -297,7 +297,7 @@ def find(
             anti_spoofing=anti_spoofing,
         ),
     )
-
+    
     pretuned_threshold = verification.find_threshold(model_name, distance_metric)
     target_threshold = threshold or pretuned_threshold
 

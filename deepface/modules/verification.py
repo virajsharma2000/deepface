@@ -453,8 +453,6 @@ def find_distance(
     Returns:
         np.float64 or np.ndarray: The calculated distance(s).
     """
-    
-    print(type(distance_metric))
     if type(distance_metric) != "<class 'str'>":
       return distance_metric(alpha_embedding, beta_embedding) 
     
