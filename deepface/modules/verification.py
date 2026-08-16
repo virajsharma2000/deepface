@@ -210,11 +210,7 @@ def verify(
                 min_distance, min_idx, min_idy = distance, idx, idy
 
     # find the face pair with minimum distance
-    if threshold is not None:
-     pretuned_threshold = threshold
-     
-    else:
-     pretuned_threshold = find_threshold(model_name, distance_metric)
+    pretuned_threshold = find_threshold(model_name, distance_metric)
      
     threshold = threshold or pretuned_threshold
     distance = float(min_distance)
@@ -498,7 +494,7 @@ def find_threshold(model_name: str, distance_metric: str) -> float:
             pair. Distances less than this threshold will be classified same person.
     """
     if type(distance_metric) != "<class 'str'>":
-     return None
+     return False
     
     else:
      if thresholds.get(model_name) is None:
