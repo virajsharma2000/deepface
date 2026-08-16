@@ -23,6 +23,7 @@ from deepface.modules.exceptions import (
     DimensionMismatchError,
 )
 from deepface.commons.logger import Logger
+from collections.abc import Callable
 
 logger = Logger()
 
@@ -32,7 +33,7 @@ def find(
     img_path: Union[str, NDArray[Any], IO[bytes]],
     db_path: str,
     model_name: str = "VGG-Face",
-    distance_metric: str = "cosine",
+    distance_metric: str | Callable = "cosine",
     enforce_detection: bool = True,
     detector_backend: str = "opencv",
     align: bool = True,
@@ -519,7 +520,7 @@ def find_batched(
     representations: List[Dict[str, Any]],
     source_objs: List[Dict[str, Any]],
     model_name: str = "VGG-Face",
-    distance_metric: str = "cosine",
+    distance_metric: str | Callable = "cosine",
     enforce_detection: bool = True,
     align: bool = True,
     threshold: Optional[float] = None,
@@ -587,6 +588,7 @@ def find_batched(
             A list where each element corresponds to a source face and
             contains a list of dictionaries with matching faces.
     """
+
     embeddings_list = []
     valid_mask_lst = []
     metadata: Set[str] = set()
@@ -887,3 +889,6 @@ def __verify_signature(
         raise ValueError("Datastore pickle signature verification failed.")
 
     logger.info(f"Datastore pickle {datastore_path} signature verified successfully.")
+
+
+

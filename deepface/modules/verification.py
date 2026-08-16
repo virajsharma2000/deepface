@@ -19,6 +19,7 @@ from deepface.modules.exceptions import (
     DataTypeError,
     InvalidEmbeddingsShapeError,
 )
+from collections.abc import Callable
 
 logger = Logger()
 
@@ -29,7 +30,7 @@ def verify(
     img2_path: Union[str, NDArray[Any], List[float], IO[bytes]],
     model_name: str = "VGG-Face",
     detector_backend: str = "opencv",
-    distance_metric: str = "cosine",
+    distance_metric: str | Callable = "cosine",
     enforce_detection: bool = True,
     align: bool = True,
     expand_percentage: int = 0,
@@ -209,7 +210,12 @@ def verify(
                 min_distance, min_idx, min_idy = distance, idx, idy
 
     # find the face pair with minimum distance
-    pretuned_threshold = find_threshold(model_name, distance_metric)
+    if threshold is not None:
+     pretuned_threshold = threshold
+     
+    else:
+     pretuned_threshold = find_threshold(model_name, distance_metric)
+     
     threshold = threshold or pretuned_threshold
     distance = float(min_distance)
     confidence = find_confidence(
@@ -433,7 +439,7 @@ def l2_normalize(
 def find_distance(
     alpha_embedding: Union[NDArray[Any], List[float]],
     beta_embedding: Union[NDArray[Any], List[float]],
-    distance_metric: str,
+    distance_metric: str | Callable = "cosine",
 ) -> Union[np.float64, NDArray[Any]]:
     """
     Wrapper to find the distance between vectors based on the specified distance metric.
@@ -447,31 +453,38 @@ def find_distance(
     Returns:
         np.float64 or np.ndarray: The calculated distance(s).
     """
-    # Convert inputs to numpy arrays if necessary
-    alpha_embedding = np.asarray(alpha_embedding)
-    beta_embedding = np.asarray(beta_embedding)
+    
+    print(type(distance_metric))
+    if type(distance_metric) != "<class 'str'>":
+      return distance_metric(alpha_embedding, beta_embedding) 
+    
+    else:
+     # Convert inputs to numpy arrays if necessary
+     alpha_embedding = np.asarray(alpha_embedding)
+     beta_embedding = np.asarray(beta_embedding)
 
-    # Ensure that both embeddings are either 1D or 2D
-    if alpha_embedding.ndim != beta_embedding.ndim or alpha_embedding.ndim not in (1, 2):
+     # Ensure that both embeddings are either 1D or 2D
+     if alpha_embedding.ndim != beta_embedding.ndim or alpha_embedding.ndim not in (1, 2):
         raise ValueError(
             f"Both embeddings must be either 1D or 2D, but received "
             f"alpha shape: {alpha_embedding.shape}, beta shape: {beta_embedding.shape}"
         )
 
-    if distance_metric == "cosine":
+     if distance_metric == "cosine":
         distance = find_cosine_distance(alpha_embedding, beta_embedding)
-    elif distance_metric == "angular":
+     elif distance_metric == "angular":
         distance = find_angular_distance(alpha_embedding, beta_embedding)
-    elif distance_metric == "euclidean":
+     elif distance_metric == "euclidean":
         distance = find_euclidean_distance(alpha_embedding, beta_embedding)
-    elif distance_metric == "euclidean_l2":
+     elif distance_metric == "euclidean_l2":
         axis = None if alpha_embedding.ndim == 1 else 1
         normalized_alpha = l2_normalize(alpha_embedding, axis=axis)
         normalized_beta = l2_normalize(beta_embedding, axis=axis)
         distance = find_euclidean_distance(normalized_alpha, normalized_beta)
-    else:
+     else:
         raise ValueError("Invalid distance_metric passed - ", distance_metric)
-    return np.round(distance, 6)
+     
+     return np.round(distance, 6)
 
 
 def find_threshold(model_name: str, distance_metric: str) -> float:
@@ -486,17 +499,21 @@ def find_threshold(model_name: str, distance_metric: str) -> float:
         threshold (float): threshold value for that model name and distance metric
             pair. Distances less than this threshold will be classified same person.
     """
-    if thresholds.get(model_name) is None:
+    if type(distance_metric) != "<class 'str'>":
+     return None
+    
+    else:
+     if thresholds.get(model_name) is None:
         raise ValueError(f"Model {model_name} is not supported. ")
 
-    threshold = thresholds.get(model_name, {}).get(distance_metric)
-
-    if threshold is None:
+     threshold = thresholds.get(model_name, {}).get(distance_metric)
+    
+     if threshold is None:
         raise ValueError(
             f"Distance metric {distance_metric} is not available for model {model_name}. "
         )
 
-    return threshold
+     return threshold
 
 
 def __sigmoid(z: float) -> float:

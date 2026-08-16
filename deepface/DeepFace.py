@@ -31,6 +31,7 @@ from deepface.modules import (
     datastore,
 )
 from deepface import __version__
+from collections.abc import Callable
 
 logger = Logger()
 
@@ -77,7 +78,7 @@ def verify(
     img2_path: Union[str, NDArray[Any], IO[bytes], List[float]],
     model_name: str = "VGG-Face",
     detector_backend: str = "opencv",
-    distance_metric: str = "cosine",
+    distance_metric: str | Callable = 'cosine',
     enforce_detection: bool = True,
     align: bool = True,
     expand_percentage: int = 0,
@@ -282,7 +283,7 @@ def find(
     img_path: Union[str, NDArray[Any], IO[bytes]],
     db_path: str,
     model_name: str = "VGG-Face",
-    distance_metric: str = "cosine",
+    distance_metric: str | Callable = 'cosine',
     enforce_detection: bool = True,
     detector_backend: str = "opencv",
     align: bool = True,
@@ -965,3 +966,6 @@ def build_index(
         connection_details=connection_details,
         max_neighbors_per_node=max_neighbors_per_node,
     )
+
+
+
