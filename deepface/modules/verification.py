@@ -451,34 +451,33 @@ def find_distance(
     """
     if type(distance_metric) != "<class 'str'>":
       return distance_metric(alpha_embedding, beta_embedding) 
-    
-    else:
+
      # Convert inputs to numpy arrays if necessary
-     alpha_embedding = np.asarray(alpha_embedding)
-     beta_embedding = np.asarray(beta_embedding)
+    alpha_embedding = np.asarray(alpha_embedding)
+    beta_embedding = np.asarray(beta_embedding)
 
      # Ensure that both embeddings are either 1D or 2D
-     if alpha_embedding.ndim != beta_embedding.ndim or alpha_embedding.ndim not in (1, 2):
+    if alpha_embedding.ndim != beta_embedding.ndim or alpha_embedding.ndim not in (1, 2):
         raise ValueError(
             f"Both embeddings must be either 1D or 2D, but received "
             f"alpha shape: {alpha_embedding.shape}, beta shape: {beta_embedding.shape}"
         )
 
-     if distance_metric == "cosine":
+    if distance_metric == "cosine":
         distance = find_cosine_distance(alpha_embedding, beta_embedding)
-     elif distance_metric == "angular":
+    elif distance_metric == "angular":
         distance = find_angular_distance(alpha_embedding, beta_embedding)
-     elif distance_metric == "euclidean":
+    elif distance_metric == "euclidean":
         distance = find_euclidean_distance(alpha_embedding, beta_embedding)
-     elif distance_metric == "euclidean_l2":
+    elif distance_metric == "euclidean_l2":
         axis = None if alpha_embedding.ndim == 1 else 1
         normalized_alpha = l2_normalize(alpha_embedding, axis=axis)
         normalized_beta = l2_normalize(beta_embedding, axis=axis)
         distance = find_euclidean_distance(normalized_alpha, normalized_beta)
-     else:
-        raise ValueError("Invalid distance_metric passed - ", distance_metric)
+    else:
+     raise ValueError("Invalid distance_metric passed - ", distance_metric)
      
-     return np.round(distance, 6)
+    return np.round(distance, 6)
 
 
 def find_threshold(model_name: str, distance_metric: str) -> float:
@@ -494,20 +493,19 @@ def find_threshold(model_name: str, distance_metric: str) -> float:
             pair. Distances less than this threshold will be classified same person.
     """
     if type(distance_metric) != "<class 'str'>":
-     return False
+     return 0.0
     
-    else:
-     if thresholds.get(model_name) is None:
-        raise ValueError(f"Model {model_name} is not supported. ")
+    if thresholds.get(model_name) is None:
+     raise ValueError(f"Model {model_name} is not supported. ")
 
-     threshold = thresholds.get(model_name, {}).get(distance_metric)
+    threshold = thresholds.get(model_name, {}).get(distance_metric)
     
-     if threshold is None:
-        raise ValueError(
+    if threshold is None:
+     raise ValueError(
             f"Distance metric {distance_metric} is not available for model {model_name}. "
         )
 
-     return threshold
+    return threshold
 
 
 def __sigmoid(z: float) -> float:
