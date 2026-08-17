@@ -449,9 +449,9 @@ def find_distance(
     Returns:
         np.float64 or np.ndarray: The calculated distance(s).
     """
-    if type(distance_metric) != "<class 'str'>":
+    if str(type(distance_metric)) != "<class 'str'>":
       return distance_metric(alpha_embedding, beta_embedding) 
-
+    
      # Convert inputs to numpy arrays if necessary
     alpha_embedding = np.asarray(alpha_embedding)
     beta_embedding = np.asarray(beta_embedding)
@@ -492,10 +492,10 @@ def find_threshold(model_name: str, distance_metric: str) -> float:
         threshold (float): threshold value for that model name and distance metric
             pair. Distances less than this threshold will be classified same person.
     """
-    if type(distance_metric) != "<class 'str'>":
+    if str(type(distance_metric)) != "<class 'str'>":
      return 0.0
     
-    if thresholds.get(model_name) is None:
+    elif thresholds.get(model_name) is None:
      raise ValueError(f"Model {model_name} is not supported. ")
 
     threshold = thresholds.get(model_name, {}).get(distance_metric)
