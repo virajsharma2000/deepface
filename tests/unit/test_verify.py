@@ -1,6 +1,7 @@
 # 3rd party dependencies
 import pytest
 import cv2
+import numpy as np
 
 # project dependencies
 from deepface import DeepFace
@@ -201,6 +202,44 @@ def test_verify_for_nested_embeddings():
 
     logger.info("✅ test verify for nested embeddings is done")
 
+def cosine_similarity(x, y):
+    x = np.atleast_2d(x)
+    y = np.atleast_2d(y)
+    
+    # Normalize vectors to unit length (L2 norm)
+    x_norm = x / np.linalg.norm(x, axis=1, keepdims=True)
+    y_norm = y / np.linalg.norm(y, axis=1, keepdims=True)
+    
+    # Compute cosine similarity via dot product
+    similarity = np.dot(x_norm, y_norm.T)
+    
+    # Convert similarity to distance
+    distance_matrix = 1.0 - similarity
+    return distance_matrix
+
+def test_verify_for_custom_metrics():
+    img1_path = "dataset/img59.jpg"
+    img2_path = "dataset/img62.jpg"
+
+    _ = DeepFace.verify(img1_path = img1_path, img2_path = img2_path, distance_metric = cosine_similarity, threshold = 0.68)
+    
+    assert _['verified'] 
+    assert _['similarity_metric'] == cosine_similarity
+
+    img1_path = "dataset/img41.jpg"
+    img2_path = "dataset/img42.jpg"
+
+    _ = DeepFace.verify(img1_path = img1_path, img2_path = img2_path, distance_metric = cosine_similarity, threshold = 0.68)
+    
+    assert not _['verified']
+    logger.info("✅ test verify for custom distance metric is done")
+
+def test_verify_for_custom_metrics_without_custom_threshold():
+   with pytest.raises(ValueError, match = 'Threshold must be specified when using custom distance metrics'):
+     DeepFace.verify(img1_path = "dataset/img41.jpg", img2_path = "dataset/img42.jpg", distance_metric = cosine_similarity)
+
+    # img47 is webp even though its extension is jpg
+   logger.info("✅ test verify for custom distance metric without custom threshold is done")
 
 def test_compability_of_verify_and_represent():
     """
