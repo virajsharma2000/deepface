@@ -2,7 +2,7 @@
 import os
 import warnings
 import logging
-from typing import Any, Dict, IO, List, Union, Optional, Sequence, Tuple, cast
+from typing import Any, Dict, IO, List, Union, Optional, Sequence, Tuple, cast, Union
 
 # this has to be set before importing tensorflow
 os.environ["TF_USE_LEGACY_KERAS"] = "1"
@@ -78,7 +78,7 @@ def verify(
     img2_path: Union[str, NDArray[Any], IO[bytes], List[float]],
     model_name: str = "VGG-Face",
     detector_backend: str = "opencv",
-    distance_metric: str | Callable = 'cosine',
+    distance_metric: Union[str, Callable] = "cosine",
     enforce_detection: bool = True,
     align: bool = True,
     expand_percentage: int = 0,
@@ -283,7 +283,7 @@ def find(
     img_path: Union[str, NDArray[Any], IO[bytes]],
     db_path: str,
     model_name: str = "VGG-Face",
-    distance_metric: str | Callable = 'cosine',
+    distance_metric: Union[str, Callable] = "cosine",
     enforce_detection: bool = True,
     detector_backend: str = "opencv",
     align: bool = True,

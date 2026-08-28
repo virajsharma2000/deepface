@@ -1,6 +1,6 @@
 # built-in dependencies
 import time
-from typing import Any, Dict, Optional, Union, List, Tuple, IO, cast
+from typing import Any, Dict, Optional, Union, List, Tuple, IO, cast, Union
 import math
 
 # 3rd party dependencies
@@ -30,7 +30,7 @@ def verify(
     img2_path: Union[str, NDArray[Any], List[float], IO[bytes]],
     model_name: str = "VGG-Face",
     detector_backend: str = "opencv",
-    distance_metric: str | Callable = "cosine",
+    distance_metric: Union[str, Callable] = "cosine",
     enforce_detection: bool = True,
     align: bool = True,
     expand_percentage: int = 0,
@@ -114,6 +114,10 @@ def verify(
 
         - 'time' (float): Time taken for the verification process in seconds.
     """
+
+    if str(type(distance_metric)) != "<class 'str'>" and threshold is None:
+     raise ValueError('Threshold must be specified when using custom distance metrics')
+        
 
     tic = time.time()
 
@@ -435,7 +439,7 @@ def l2_normalize(
 def find_distance(
     alpha_embedding: Union[NDArray[Any], List[float]],
     beta_embedding: Union[NDArray[Any], List[float]],
-    distance_metric: str | Callable = "cosine",
+    distance_metric: Union[str, Callable] = "cosine",
 ) -> Union[np.float64, NDArray[Any]]:
     """
     Wrapper to find the distance between vectors based on the specified distance metric.

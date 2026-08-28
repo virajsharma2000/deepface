@@ -1,7 +1,7 @@
 # built-in dependencies
 import os
 import pickle
-from typing import List, Union, Optional, Dict, Any, Set, IO, cast, Tuple
+from typing import List, Union, Optional, Dict, Any, Set, IO, cast, Tuple, Union
 import time
 import ast
 
@@ -33,7 +33,7 @@ def find(
     img_path: Union[str, NDArray[Any], IO[bytes]],
     db_path: str,
     model_name: str = "VGG-Face",
-    distance_metric: str | Callable = "cosine",
+    distance_metric: Union[str, Callable] = "cosine",
     enforce_detection: bool = True,
     detector_backend: str = "opencv",
     align: bool = True,
@@ -145,7 +145,9 @@ def find(
             - 'confidence': Confidence score indicating the likelihood that the faces belong to
                     the same individual. This is calculated based on the distance and the threshold.
     """
-
+    if str(type(distance_metric)) != "<class 'str'>" and threshold is None:
+      raise ValueError('Threshold must be specified when using custom distance metrics')
+    
     tic = time.time()
 
     if not os.path.isdir(db_path):
@@ -520,7 +522,7 @@ def find_batched(
     representations: List[Dict[str, Any]],
     source_objs: List[Dict[str, Any]],
     model_name: str = "VGG-Face",
-    distance_metric: str | Callable = "cosine",
+    distance_metric: Union[str, Callable] = "cosine",
     enforce_detection: bool = True,
     align: bool = True,
     threshold: Optional[float] = None,
