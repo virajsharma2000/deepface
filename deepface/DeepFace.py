@@ -2,7 +2,7 @@
 import os
 import warnings
 import logging
-from typing import Any, Dict, IO, List, Union, Optional, Sequence, Tuple, cast, Union
+from typing import Any, Dict, IO, List, Union, Optional, Sequence, Tuple, cast, Callable
 
 # this has to be set before importing tensorflow
 os.environ["TF_USE_LEGACY_KERAS"] = "1"
@@ -10,7 +10,10 @@ os.environ["TF_USE_LEGACY_KERAS"] = "1"
 # pylint: disable=wrong-import-position, too-many-positional-arguments
 
 # 3rd party dependencies
+import numpy as np
+
 from numpy.typing import NDArray
+
 import pandas as pd
 import tensorflow as tf
 from lightphe import LightPHE
@@ -31,9 +34,17 @@ from deepface.modules import (
     datastore,
 )
 from deepface import __version__
-from collections.abc import Callable
+
 
 logger = Logger()
+
+
+# Shared type alias for the distance_metric parameter used across this module.
+# Either a metric name (str) or a custom callable taking two embeddings and
+# returning a distance (np.float64 for single embeddings, or NDArray for batches).
+DistanceMetricType = Union[
+    str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]
+]
 
 # -----------------------------------
 # configurations for dependencies
@@ -78,7 +89,7 @@ def verify(
     img2_path: Union[str, NDArray[Any], IO[bytes], List[float]],
     model_name: str = "VGG-Face",
     detector_backend: str = "opencv",
-    distance_metric: Union[str, Callable] = "cosine",
+    distance_metric: DistanceMetricType = "cosine",
     enforce_detection: bool = True,
     align: bool = True,
     expand_percentage: int = 0,
@@ -283,7 +294,7 @@ def find(
     img_path: Union[str, NDArray[Any], IO[bytes]],
     db_path: str,
     model_name: str = "VGG-Face",
-    distance_metric: Union[str, Callable] = "cosine",
+    distance_metric: DistanceMetricType = "cosine",
     enforce_detection: bool = True,
     detector_backend: str = "opencv",
     align: bool = True,
@@ -966,6 +977,3 @@ def build_index(
         connection_details=connection_details,
         max_neighbors_per_node=max_neighbors_per_node,
     )
-
-
-
