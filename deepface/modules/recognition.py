@@ -1,7 +1,7 @@
 # built-in dependencies
 import os
 import pickle
-from typing import List, Union, Optional, Dict, Any, Set, IO, cast, Tuple
+from typing import List, Union, Optional, Dict, Any, Set, IO, cast, Tuple, Callable
 import time
 import ast
 
@@ -15,7 +15,7 @@ from lightdsa import LightDSA
 # project dependencies
 from deepface.commons import image_utils
 from deepface.modules import representation, detection, verification
-from deepface.modules.verification import DistanceMetricType
+
 from deepface.modules.exceptions import (
     ImgNotFound,
     PathNotFound,
@@ -33,7 +33,7 @@ def find(
     img_path: Union[str, NDArray[Any], IO[bytes]],
     db_path: str,
     model_name: str = "VGG-Face",
-    distance_metric: DistanceMetricType = "cosine",
+    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
     enforce_detection: bool = True,
     detector_backend: str = "opencv",
     align: bool = True,
@@ -523,7 +523,7 @@ def find_batched(
     representations: List[Dict[str, Any]],
     source_objs: List[Dict[str, Any]],
     model_name: str = "VGG-Face",
-    distance_metric: DistanceMetricType = "cosine",
+    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
     enforce_detection: bool = True,
     align: bool = True,
     threshold: Optional[float] = None,
@@ -893,4 +893,3 @@ def __verify_signature(
         raise ValueError("Datastore pickle signature verification failed.")
 
     logger.info(f"Datastore pickle {datastore_path} signature verified successfully.")
-    

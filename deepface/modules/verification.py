@@ -23,21 +23,13 @@ from deepface.modules.exceptions import (
 
 logger = Logger()
 
-# Shared type alias for the distance_metric parameter used across this module.
-# Either a metric name (str) or a custom callable taking two embeddings and
-# returning a distance (np.float64 for single embeddings, or NDArray for batches).
-DistanceMetricType = Union[
-    str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]
-]
-
-
 # pylint: disable=too-many-positional-arguments, no-else-return
 def verify(
     img1_path: Union[str, NDArray[Any], List[float], IO[bytes]],
     img2_path: Union[str, NDArray[Any], List[float], IO[bytes]],
     model_name: str = "VGG-Face",
     detector_backend: str = "opencv",
-    distance_metric: DistanceMetricType = "cosine",
+    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
     enforce_detection: bool = True,
     align: bool = True,
     expand_percentage: int = 0,
@@ -446,7 +438,7 @@ def l2_normalize(
 def find_distance(
     alpha_embedding: Union[NDArray[Any], List[float]],
     beta_embedding: Union[NDArray[Any], List[float]],
-    distance_metric: DistanceMetricType = "cosine",
+    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
 ) -> Union[np.float64, NDArray[Any]]:
     """
     Wrapper to find the distance between vectors based on the specified distance metric.
@@ -493,7 +485,7 @@ def find_distance(
     return np.round(distance, 6)
 
 
-def find_threshold(model_name: str, distance_metric: DistanceMetricType = "cosine") -> float:
+def find_threshold(model_name: str, distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine") -> float:
     """
     Retrieve pre-tuned threshold values for a model and distance metric pair
     Args:
@@ -549,7 +541,7 @@ def find_confidence(
     distance: float,
     model_name: str,
     verified: bool,
-    distance_metric: DistanceMetricType = "cosine",
+    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
 ) -> float:
     """
     Using pre-built logistic regression model, find confidence value from distance.
