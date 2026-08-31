@@ -81,7 +81,7 @@ def verify(
     img2_path: Union[str, NDArray[Any], IO[bytes], List[float]],
     model_name: str = "VGG-Face",
     detector_backend: str = "opencv",
-    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
+    distance_metric: Union[str, Callable] = "cosine", # type: ignore[type-arg]
     enforce_detection: bool = True,
     align: bool = True,
     expand_percentage: int = 0,
@@ -286,7 +286,7 @@ def find(
     img_path: Union[str, NDArray[Any], IO[bytes]],
     db_path: str,
     model_name: str = "VGG-Face",
-    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
+    distance_metric: Union[str, Callable] = "cosine", # type: ignore[type-arg]
     enforce_detection: bool = True,
     detector_backend: str = "opencv",
     align: bool = True,

@@ -205,15 +205,12 @@ def test_verify_for_nested_embeddings():
 def cosine_similarity(x, y):
     x = np.atleast_2d(x)
     y = np.atleast_2d(y)
-    
-    # Normalize vectors to unit length (L2 norm)
+
     x_norm = x / np.linalg.norm(x, axis=1, keepdims=True)
     y_norm = y / np.linalg.norm(y, axis=1, keepdims=True)
-    
-    # Compute cosine similarity via dot product
-    similarity = np.dot(x_norm, y_norm.T)
-    
-    # Convert similarity to distance
+
+    # rows = y (second arg), columns = x (first arg) — matches find_distance's (M, N) contract
+    similarity = np.dot(y_norm, x_norm.T)
     distance_matrix = 1.0 - similarity
     return distance_matrix
 
@@ -296,3 +293,25 @@ def test_confidence():
             result["confidence"] <= 49
         ), f"Confidence should be <= 49 for different persons, got {result['confidence']}"
         logger.info(f"✅ test confidence for {distance_metric} metric is done")
+
+def test_find_distance_for_custom_metrics_with_list_of_embeddings():
+    img_paths = ["dataset/img1.jpg", "dataset/img2.jpg", "dataset/img3.jpg"]
+
+    embeddings = [
+        DeepFace.represent(img_path=p, model_name="Facenet")[0]["embedding"]
+        for p in img_paths
+    ]
+
+    source_embeddings = np.array(embeddings[:2])  # (2, D)
+    target_embeddings = np.array(embeddings)  # (3, D)
+
+    distances = find_distance(
+        alpha_embedding=source_embeddings,
+        beta_embedding=target_embeddings,
+        distance_metric=cosine_similarity,
+    )
+
+    assert isinstance(distances, np.ndarray)
+    assert distances.shape == (3, 2)
+
+    logger.info("✅ test find_distance for custom distance metric with list of embeddings is done")

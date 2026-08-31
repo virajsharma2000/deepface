@@ -33,7 +33,7 @@ def find(
     img_path: Union[str, NDArray[Any], IO[bytes]],
     db_path: str,
     model_name: str = "VGG-Face",
-    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
+    distance_metric: Union[str, Callable] = "cosine", # type: ignore[type-arg]
     enforce_detection: bool = True,
     detector_backend: str = "opencv",
     align: bool = True,
@@ -523,7 +523,7 @@ def find_batched(
     representations: List[Dict[str, Any]],
     source_objs: List[Dict[str, Any]],
     model_name: str = "VGG-Face",
-    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
+    distance_metric: Union[str, Callable] = "cosine", # type: ignore[type-arg]
     enforce_detection: bool = True,
     align: bool = True,
     threshold: Optional[float] = None,

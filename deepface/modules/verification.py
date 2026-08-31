@@ -29,7 +29,7 @@ def verify(
     img2_path: Union[str, NDArray[Any], List[float], IO[bytes]],
     model_name: str = "VGG-Face",
     detector_backend: str = "opencv",
-    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
+    distance_metric: Union[str, Callable] = "cosine", # type: ignore[type-arg]
     enforce_detection: bool = True,
     align: bool = True,
     expand_percentage: int = 0,
@@ -438,7 +438,7 @@ def l2_normalize(
 def find_distance(
     alpha_embedding: Union[NDArray[Any], List[float]],
     beta_embedding: Union[NDArray[Any], List[float]],
-    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
+    distance_metric: Union[str, Callable] = "cosine", # type: ignore[type-arg]
 ) -> Union[np.float64, NDArray[Any]]:
     """
     Wrapper to find the distance between vectors based on the specified distance metric.
@@ -459,7 +459,7 @@ def find_distance(
     beta_embedding = np.asarray(beta_embedding)
 
     if not isinstance(distance_metric, str):
-        return distance_metric(alpha_embedding, beta_embedding)
+        return distance_metric(alpha_embedding, beta_embedding) # type: ignore[no-any-return]
 
     # Ensure that both embeddings are either 1D or 2D
     if alpha_embedding.ndim != beta_embedding.ndim or alpha_embedding.ndim not in (1, 2):
@@ -485,7 +485,7 @@ def find_distance(
     return np.round(distance, 6)
 
 
-def find_threshold(model_name: str, distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine") -> float:
+def find_threshold(model_name: str, distance_metric: Union[str, Callable] = "cosine") -> float: # type: ignore[type-arg]
     """
     Retrieve pre-tuned threshold values for a model and distance metric pair
     Args:
@@ -541,7 +541,7 @@ def find_confidence(
     distance: float,
     model_name: str,
     verified: bool,
-    distance_metric: Union[str, Callable[[NDArray[Any], NDArray[Any]], Union[np.float64, NDArray[Any]]]] = "cosine",
+    distance_metric: Union[str, Callable] = "cosine", # type: ignore[type-arg]
 ) -> float:
     """
     Using pre-built logistic regression model, find confidence value from distance.
