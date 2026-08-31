@@ -10,8 +10,6 @@ os.environ["TF_USE_LEGACY_KERAS"] = "1"
 # pylint: disable=wrong-import-position, too-many-positional-arguments
 
 # 3rd party dependencies
-import numpy as np
-
 from numpy.typing import NDArray
 
 import pandas as pd

@@ -485,7 +485,9 @@ def find_distance(
     return np.round(distance, 6)
 
 
-def find_threshold(model_name: str, distance_metric: Union[str, Callable] = "cosine") -> float: # type: ignore[type-arg]
+def find_threshold(
+        model_name: str,
+        distance_metric: Union[str, Callable] = "cosine") -> float: # type: ignore[type-arg]
     """
     Retrieve pre-tuned threshold values for a model and distance metric pair
     Args:
