@@ -2,6 +2,7 @@
 import os
 
 # 3rd party dependencies
+import pytest
 import cv2
 import numpy as np
 
